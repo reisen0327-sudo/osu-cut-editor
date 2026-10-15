@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob:; img-src 'self' data: blob: file:;">
+  <title>osu! Cut Editor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header id="topbar">
+    <div class="brand">
+      <img id="brand-icon" alt="logo">
+      <h1>osu! Cut Editor</h1>
+    </div>
+    <div class="toolbar">
+      <button id="btn-open-osu">导入 .osu</button>
+      <button id="btn-open-folder">导入谱面文件夹</button>
+      <button id="btn-open-osz">导入 .osz</button>
+      <span class="sep"></span>
+      <button id="btn-export-folder" disabled>导出独立副本</button>
+      <button id="btn-export-osz" disabled>导出 .osz</button>
+    </div>
+  </header>
+
+  <main id="layout">
+    <section id="editor-pane">
+      <div id="beatmap-title">未加载谱面</div>
+      <div class="canvas-wrap">
+        <canvas id="playfield" width="1024" height="768"></canvas>
+      </div>
+    </section>
+
+    <aside id="side-pane">
+      <div class="card" id="import-card">
+        <h2>谱面</h2>
+        <div id="osu-file-list"></div>
+      </div>
+
+      <div class="card" id="transport-card">
+        <h2>播放</h2>
+        <div class="transport">
+          <button id="btn-play">▶ 播放</button>
+          <button id="btn-stop">■ 停止</button>
+          <span id="time-label">0 ms</span>
+        </div>
+        <div class="transport">
+          <label>跳转(ms)</label>
+          <input id="seek-input" type="number" value="0" min="0" step="1">
+          <button id="btn-seek">跳转</button>
+        </div>
+        <div id="mania-speed-row" style="display:none;">
+          <div class="control-heading"><label for="mania-speed">滚动速度</label><output id="mania-speed-value" for="mania-speed">2.00×</output></div>
+          <input id="mania-speed" type="range" min="0.5" max="8" step="0.01" value="2" aria-label="Mania 画面滚动速度">
+          <div class="range-labels"><span>0.50× · 慢</span><span>8.00× · 快</span></div>
+          <div id="mania-speed-hint" class="hint">前方显示 2.00 秒 · 音频速度保持不变</div>
+        </div>
+      </div>
+
+      <div class="card" id="cut-card">
+        <h2>Cut 区间</h2>
+        <div class="time-grid time-grid-heading" aria-hidden="true"><span></span><span>分:秒.毫秒</span><span>毫秒 (ms)</span></div>
+        <div class="time-grid">
+          <span>开始</span>
+          <input id="cut-start-time" type="text" value="00:00.000" placeholder="00:49.809" spellcheck="false" aria-label="开始时间，分秒格式" aria-describedby="time-input-feedback">
+          <input id="cut-start" type="number" value="0" min="0" step="0.001" aria-label="开始时间，毫秒" aria-describedby="time-input-feedback">
+        </div>
+        <div class="time-grid">
+          <span>结束</span>
+          <input id="cut-end-time" type="text" value="00:00.000" placeholder="01:12.345" spellcheck="false" aria-label="结束时间，分秒格式" aria-describedby="time-input-feedback">
+          <input id="cut-end" type="number" value="0" min="0" step="0.001" aria-label="结束时间，毫秒" aria-describedby="time-input-feedback">
+        </div>
+        <div id="time-input-feedback" class="hint" aria-live="polite">两种格式自动换算，可直接粘贴游戏时间戳。</div>
+        <div class="row">
+          <label>节拍分度</label>
+          <select id="snap-divisor">
+            <option value="1">1/1 一拍</option>
+            <option value="2">1/2 半拍</option>
+            <option value="4" selected>1/4 四分之一拍</option>
+            <option value="8">1/8 八分之一拍</option>
+            <option value="16">1/16 十六分之一拍</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>锚定</label>
+          <button id="btn-snap-to-start">当前→起点</button>
+          <button id="btn-snap-to-end">当前→终点</button>
+        </div>
+        <div class="row buttons">
+          <button id="btn-select-range">选中区间</button>
+          <button id="btn-cut" disabled>执行 Cut</button>
+        </div>
+        <div class="row buttons">
+          <button id="btn-undo" disabled>撤销</button>
+          <button id="btn-redo" disabled>重做</button>
+          <button id="btn-reset" disabled>恢复原始</button>
+        </div>
+        <div class="hint">剪切范围含起点、不含终点；结果移除视频和故事板。</div>
+        <div id="snap-label" class="hint">无节拍锚定</div>
+        <div id="cut-report" class="hint">时间轴滚轮=按节拍跳转；拖动框选 Note 区间</div>
+      </div>
+
+      <div class="card" id="info-card">
+        <h2>谱面信息</h2>
+        <pre id="metadata"></pre>
+      </div>
+    </aside>
+    <footer id="timeline-pane">
+      <div class="timeline-head">
+        <span id="timeline-scale-label"></span>
+        <span id="selection-label">未选中区间</span>
+      </div>
+      <canvas id="timeline" width="1200" height="140"></canvas>
+    </footer>
+  </main>
+
+  <script>
+    window.require = require;
+  </script>
+  <script src="renderer.js"></script>
+</body>
+</html>

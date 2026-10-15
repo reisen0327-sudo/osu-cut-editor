@@ -1,0 +1,52 @@
+{
+  "name": "osu-cut-editor",
+  "version": "1.0.0",
+  "packageManager": "pnpm@11.22.0",
+  "description": "osu! beatmap & audio cut editor (real-time, ms precision)",
+  "main": "main.js",
+  "author": "osu-cut-editor",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.js",
+    "test:electron": "node scripts/run-electron-check.cjs",
+    "dist": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "adm-zip": "^0.6.1"
+  },
+  "devDependencies": {
+    "electron": "^44.7.2",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.osucut.editor",
+    "productName": "osu-cut-editor",
+    "asar": true,
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "renderer/**/*",
+      "shared/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "osu-cut-editor-${version}.exe"
+    }
+  }
+}

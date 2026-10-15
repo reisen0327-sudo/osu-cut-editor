@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.test-tmp/
+build/verification-*/
+build/subagent-proof.txt
+*.log
+.env
+.env.*
